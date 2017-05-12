@@ -9,10 +9,10 @@ public class Reader implements Runnable {
 	public Object mutex;
 	private int id;
 	
-	Reader(LinkedList<Integer> l , int i, Semaphore s, Object m){
+	Reader(LinkedList<Integer> l , int i, Semaphore s, int rC ,Object m){
 		this.library = l;
 		this.id = i;
-		this.readerCount = 0;
+		this.readerCount = rC;
 		this.mutex = m;
 		this.semaphore = s;
 	}
@@ -20,23 +20,27 @@ public class Reader implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		try {
-			synchronized(mutex){
-				readerCount++;
-			}
-			semaphore.acquire();
-			System.out.println("#" + this.id + " read from library: " + this.library);
-			semaphore.release();
-			synchronized(mutex){
-				readerCount--;
-				if(readerCount == 0){
-					mutex.notify();
+		while (true){
+			try {
+				synchronized(mutex){
+					readerCount++;
 				}
+				semaphore.acquire();
+				System.out.println("#" + this.id + " read from library: " + this.library);
+				Thread.sleep((long) (Math.random() * 10000));
+				semaphore.release();
+				synchronized(mutex){
+					readerCount--;
+					//System.out.println("readerCount: " + this.readerCount);
+					if(readerCount == 0){
+						mutex.notify();
+						//System.out.println("NotifyAll");
+					}
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
-
 }
