@@ -5,7 +5,7 @@ public class Reader implements Runnable {
 
 	public LinkedList<Integer> library;
 	public Semaphore semaphore;
-	public int readerCount;
+	public Integer readerCount;
 	public Object mutex;
 	private int id;
 	
@@ -22,18 +22,19 @@ public class Reader implements Runnable {
 		// TODO Auto-generated method stub
 		while (true){
 			try {
-				synchronized(mutex){
-					readerCount++;
+				synchronized(this.mutex){
+					this.readerCount++;
+					System.out.println("Thread #" + this.id+ " readerCount: " + this.readerCount);
 				}
 				semaphore.acquire();
-				System.out.println("#" + this.id + " read from library: " + this.library);
-				Thread.sleep((long) (Math.random() * 10000));
+				System.out.println("#" + this.id + " is reading from library: " + this.library);
+				Thread.sleep((long) (10000));
 				semaphore.release();
-				synchronized(mutex){
-					readerCount--;
+				synchronized(this.mutex){
+					this.readerCount--;
 					//System.out.println("readerCount: " + this.readerCount);
-					if(readerCount == 0){
-						mutex.notify();
+					if(this.readerCount == 0){
+						mutex.notifyAll();
 						//System.out.println("NotifyAll");
 					}
 				}

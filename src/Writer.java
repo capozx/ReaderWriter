@@ -5,7 +5,7 @@ public class Writer implements Runnable {
 
 	public LinkedList<Integer> library;
 	public Semaphore semaphore;
-	public int readerCount;
+	public Integer readerCount;
 	public Object mutex;
 	
 	Writer(LinkedList<Integer> l , Semaphore s,int rC, Object m ){
@@ -21,7 +21,7 @@ public class Writer implements Runnable {
 		System.out.println("Writer started.");
 		while(true){
 			synchronized(mutex){
-				if(readerCount != 0){
+				if(this.readerCount != 0){
 					try {
 						System.out.println("readerCount != 0. Writer is waiting...");
 						mutex.wait();
@@ -32,7 +32,7 @@ public class Writer implements Runnable {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}
+				} 
 			}
 		}
 	}
